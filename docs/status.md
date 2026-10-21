@@ -6,7 +6,7 @@ or expected hardware specifications.
 
 | Milestone | Status | Existing evidence / remaining work |
 |---|---|---|
-| M0 | Pending | No machine-state tool, frozen workload list, confirmed tracer, or noise report |
+| M0 | In progress | Machine-state record/apply/restore implemented and fixture-tested; frozen workload list, confirmed tracer, and noise report pending |
 | M1 | Pending | Legacy simulator exists; no probe, measured hardware JSON, or configuration loading |
 | M2 | Pending | No PMU harness, verified prefetch-control utility, or verified counter map |
 | M3 | Pending | No native/trace characterization pairs or established findings |

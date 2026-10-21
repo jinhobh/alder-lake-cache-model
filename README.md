@@ -13,6 +13,8 @@ The repository currently contains an **unvalidated functional baseline** in
 `src/cache_sim.c`. Its regression tests establish software behavior only.
 No hardware fidelity, measured configuration, or milestone completion is claimed.
 
+Phase 0 tooling has started: see [machine-state collection and controls](tools/README.md).
+
 ## Validation targets
 
 - S1: every compared microbenchmark event within the hardware 95% interval,

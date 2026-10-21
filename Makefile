@@ -6,6 +6,6 @@ all: cache-sim
 cache-sim: src/cache_sim.c
 	$(CC) $(CFLAGS) $< -o $@
 test: cache-sim
-	python3 tests/test_sim.py
+	python3 -m unittest discover -s tests -v
 clean:
 	rm -f cache-sim

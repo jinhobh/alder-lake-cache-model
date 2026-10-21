@@ -1,46 +1,78 @@
-# i7-12700K trace-driven cache model
+# Validated i7-12700K cache-hierarchy model
 
-A C11 functional cache simulator for serialized physical-address traces. No runtime dependencies. Python 3 is used only by the regression tests.
+This project aims to build a publicly documented, hardware-validated model of
+cache traffic on the Intel i7-12700K, covering Golden Cove P-cores, the
+Gracemont E-cluster, and hardware prefetchers. It predicts event counts:
+fills, misses, evictions, writebacks, and coherence transfers.
+
+[PLAN.md](PLAN.md) is the authoritative scope, phased roadmap, success criteria,
+and experimental protocol. [Project status](docs/status.md) records what exists
+and the evidence still needed to pass each milestone.
+
+The repository currently contains an **unvalidated functional baseline** in
+`src/cache_sim.c`. Its regression tests establish software behavior only.
+No hardware fidelity, measured configuration, or milestone completion is claimed.
+
+## Validation targets
+
+- S1: every compared microbenchmark event within the hardware 95% interval,
+  prefetchers off, on both core types.
+- S2: held-out per-level MPKI error, prefetchers off: median ≤ 5%, worst ≤ 15%.
+- S3: held-out per-level MPKI error, prefetchers on: median ≤ 10%.
+- S4: paired-scenario direction correct in ≥ 95% of pairs; magnitude within 20%.
+- S5–S6: a reproducible finding for every mechanism and an attributed error budget.
+
+S2–S4 are provisional until Phase 0 measures run-to-run and reboot variation.
+Targets tighter than approximately twice the measured coefficient of variation
+must be restated relative to noise. Timing is gated by Phase 8; cycle prediction,
+kernel accesses, simultaneous P-core SMT siblings, iGPU contention, and
+wrong-path accesses are outside the current model scope.
+
+## Evidence rules
+
+Measured facts belong in `hardware/12700k.json`; assumptions belong in
+`models/*.json`. Those files will be created when their supporting work exists;
+the legacy constants are not measured facts. Every result must identify both
+configuration files, the git revision, and the machine-state record.
+
+Freeze 15–20 held-out workloads during Phase 0. Do not inspect held-out results
+until a model version is frozen, and do not tune on those results. Every
+simulator statistic compared with hardware needs an exact, core-type-specific
+PMU mapping. Mechanisms must improve held-out agreement beyond measurement
+noise under the frozen-model protocol.
+
+## Roadmap
+
+| Milestone | Work | Required evidence |
+|---|---|---|
+| M0 | Machine control, frozen held-out set, tracer selection, noise floor | Repeated runs across reboots; finalized noise-relative targets |
+| M1 | CPUID/sysfs probe, hardware facts, configurable simulator and trace | Geometry and sharing match the machine; hypotheses change without source edits |
+| M2 | User-only PMU harness, verified prefetch controls, counter map | No multiplexing; baseline subtraction; documented event semantics |
+| M3 | Prefetch-off capacity, conflict, inclusion, slice and write characterization | S1 on P and E; reproducible findings |
+| M4 | Sharing and coherence | S1 on sharing benchmarks |
+| M5 | Separate P/E prefetcher characterization and interactions | S1 or quantified, attributed residuals |
+| M6 | Frozen-model held-out validation and error budget | S2–S6 met or gaps documented |
+
+Follow Phases 0–8 in [the plan](PLAN.md). Phase 2 configurability precedes
+Phase 4 characterization. Timing begins only if prefetch error exceeds target
+and the error budget primarily attributes it to timeliness. Raptor Lake
+portability is a stretch goal using configuration changes only.
+
+## Run the existing baseline
 
 ```sh
 make
 ./cache-sim examples/mixed.trace
-cat examples/mixed.trace | ./cache-sim -
 make test
 ```
 
-## Trace format
+The baseline still accepts the legacy text trace (`CORE OP ADDRESS SIZE`) and
+uses hard-coded geometry, LRU, flat modulo indexing, and ideal serialized snoops.
+It does not yet implement the planned binary trace, logical CPU topology,
+physical-page seed distributions, configuration loading, prefetchers, TLBs,
+or explicit coherence states. See the [legacy reference](docs/legacy-simulator.md)
+for its CLI, statistics, assumptions, and limitations.
 
-Each row is `CORE OP ADDRESS SIZE`, separated by whitespace. Blank lines and `#` comments are accepted. `CORE` is a physical core: 0–7 are P cores, 8–11 are E cores. `OP` is `R` (load), `W` (store), or `I` (instruction fetch). Addresses are decimal or lowercase `0x` hexadecimal; sizes are positive decimal bytes. Ranges crossing a 64-byte boundary generate one access per touched line. Input order defines execution order. SMT siblings should both map to their physical P-core ID; these IDs do not imply OS CPU numbering. Convert virtual addresses to physical addresses before simulation when physical placement matters.
-
-```text
-0 R 0x1000 8
-0 W 0x103c 8
-8 I 0x8000 16
-```
-
-## Geometry
-
-All sizes below use binary units and all lines are 64 bytes.
-
-| Cache | Instances | Capacity each | Ways | Sets |
-|---|---:|---:|---:|---:|
-| P-core L1D | 8 | 48 KiB | 12 | 64 |
-| P-core L1I | 8 | 32 KiB | 8 | 64 |
-| P-core unified L2 | 8 | 1.25 MiB | 10 | 2,048 |
-| E-core L1D | 4 | 32 KiB | 8 | 64 |
-| E-core L1I | 4 | 64 KiB | 8 | 128 |
-| E-cluster unified L2 | 1, shared by all 4 E cores | 2 MiB | 16 | 2,048 |
-| Shared unified L3 | 1 | 25 MiB | 10 | 40,960 |
-
-Intel's [i7-12700K product specifications](https://www.intel.com/content/www/us/en/products/sku/134594/intel-core-i712700k-processor-25m-cache-up-to-5-00-ghz/specifications.html) establish 8 P cores, 4 E cores, 20 threads, 12 MiB total L2 and 25 MiB L3. Intel's [Optimization Reference Manual](https://cdrdv2-public.intel.com/814198/248966-Optimization-Reference-Manual-V1-049.pdf) describes Golden Cove and Gracemont cache architectures. These are preset modeling parameters, not runtime hardware detection. Confirm geometry on the target machine with CPUID leaf 4 on each core type when validating results. In particular, do not substitute the full Alder Lake die's 30 MiB/12-way LLC for this SKU's 25 MiB/10-way preset.
-
-## Policies and interpretation
-
-* Set index is `line_address % number_of_sets`. Exact LRU replacement, cold initial state, write-back and write-allocate at every level. Full-line writebacks allocate without issuing a read. Partial stores fetch the line on a miss.
-* The hierarchy is noninclusive and nonexclusive: lower-level eviction does not invalidate upper copies. An upper-level miss traverses L2, L3, then memory. Dirty evictions propagate downward.
-* Ideal serialized snoops forward dirty peer L1D lines to their L2 and dirty peer L2 lines to L3 before lookup. Stores invalidate other cores' L1 copies, all L1I copies, and other L2 domains. This models coherence effects on residency and traffic without implementing MESI states, ownership messages, or coherence timing. Self-modifying code and concurrent instruction/data synchronization are outside scope.
-* CSV hits/misses count lookups caused by demand accesses (including demand misses forwarded from an upper cache). `wb_hits`/`wb_misses` count incoming writebacks separately. `writebacks` includes dirty evictions and dirty snoop forwarding; invalidations are not counted as capacity evictions. Miss rate is local misses divided by demand lookups.
-* The final comment reports trace records, demand line accesses, memory line reads, and memory line writes. Each transfer is 64 bytes. Dirty lines remain resident at trace end; memory writes count traffic during execution, not a final drain.
-
-This is a locality and traffic model, not a cycle-accurate prediction. It omits prefetching, TLBs, virtual translation, speculative accesses, micro-op caches, out-of-order execution, bandwidth, MSHRs, timing, and Intel's undocumented replacement and LLC slice hash. A flat modulo-indexed L3 preserves capacity and associativity but can produce different conflicts from real hardware. No IPC, execution time, or AMAT is inferred from hit counts. Large traces stream through bounded cache storage; each line access performs ideal snoops across the fixed 12-core topology.
+The planned repository layout is specified in PLAN.md. Current `src/`, `tests/`,
+and `examples/` remain usable during migration; directories and measured
+artifacts should be added with their implementation and evidence.

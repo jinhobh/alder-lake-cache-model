@@ -1,2 +1,4 @@
 /cache-sim
 __pycache__/
+/probe-cpu
+/test-cpuid

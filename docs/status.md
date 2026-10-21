@@ -7,7 +7,7 @@ or expected hardware specifications.
 | Milestone | Status | Existing evidence / remaining work |
 |---|---|---|
 | M0 | In progress | Machine-state controls and noise analyzer implemented and fixture-tested; frozen workload list, confirmed tracer, and hardware noise report pending |
-| M1 | Pending | Legacy simulator exists; no probe, measured hardware JSON, or configuration loading |
+| M1 | In progress | Per-CPU CPUID/sysfs probe implemented; AMD-host smoke checks and synthetic Intel decoding tests pass; target JSON and simulator configuration loading pending |
 | M2 | Pending | No PMU harness, verified prefetch-control utility, or verified counter map |
 | M3 | Pending | No native/trace characterization pairs or established findings |
 | M4 | Pending | Legacy ideal snoops exist; no explicit measured coherence protocol or sharing validation |

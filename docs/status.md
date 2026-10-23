@@ -8,7 +8,7 @@ or expected hardware specifications.
 |---|---|---|
 | M0 | In progress | Machine-state controls and noise analyzer implemented and fixture-tested; 16-workload CLI suite frozen with paired inputs and tool hashes; DynamoRIO offline synthetic smoke passed on AMD; target P/E tracer confirmation, region alignment and hardware noise report pending |
 | M1 | In progress | Per-CPU CPUID/sysfs probe implemented; AMD-host smoke checks and synthetic Intel decoding tests pass; target JSON and simulator configuration loading pending |
-| M2 | Pending | No PMU harness, verified prefetch-control utility, or verified counter map |
+| M2 | In progress | Native user-only pinned PMU group library and provenance runner implemented; ten synthetic AMD pairs passed; target P/E semantics, trace-region alignment, prefetch control and counter map pending |
 | M3 | Pending | No native/trace characterization pairs or established findings |
 | M4 | Pending | Legacy ideal snoops exist; no explicit measured coherence protocol or sharing validation |
 | M5 | Pending | No prefetch model or characterization |
@@ -27,6 +27,8 @@ or expected hardware specifications.
    offline conversion, invariants and instruction/data coverage checks. See
    [reproduction](../tracer/README.md) and [evidence](tracer-smoke.md). Repeat on
    target P/E cores and align user-only regions with the native PMU harness.
+   The native harness foundation now passes a ten-pair AMD API smoke and
+   fixture tests; see [harness scope and reproduction](../harness/README.md).
 4. Collect at least ten repeats per workload under identical recorded state,
    repeat across reboots, and report median, CV, and bootstrap 95% intervals
    for each event. Phase 0 uses these measurements to establish variability,

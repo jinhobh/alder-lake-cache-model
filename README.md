@@ -18,7 +18,9 @@ and the [noise-floor protocol and analyzer](validation/README.md). The
 [CPU inventory probe](hardware/README.md) captures CPUID/sysfs facts; target-machine
 measurements and simulator configuration loading remain pending. DynamoRIO
 [tracer selection and smoke check](tracer/README.md) now pass on the AMD
-development host; target P/E confirmation and PMU region alignment remain open.
+development host. The [native PMU harness foundation](harness/README.md) now
+passes a synthetic AMD API smoke; target P/E confirmation, verified counter
+semantics and DynamoRIO/PMU region alignment remain open.
 
 ## Validation targets
 

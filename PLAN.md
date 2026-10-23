@@ -104,11 +104,22 @@ docs/counter_map.md         sim statistic ↔ PMU event ↔ known discrepancies
   - Repeat across reboots, since physical page assignment changes between boots.
   - Report median, CV and bootstrap 95% CI per event.
 
-**Next:** Run `tracer/smoke.py` on the i7-12700K, pinned separately to a P-core
-and an E-core. Implement the Phase 3 user-only PMU harness and matching trace
-region boundaries, then collect native noise measurements across reboots. The
-current AMD host cannot provide target evidence. Machine-state tooling and the noise analyzer exist, but the complete machine checklist and
-noise-relative thresholds remain unverified; M0 is still in progress.
+**Native harness progress (2026-10-23):** `harness/pmu.c` now provides explicit
+PMU groups, CPU pinning, user-only counting, physical-counter budget enforcement,
+per-region enabled/running checks and rejection of multiplexed samples.
+`harness/run.py` retains machine state, hashes, logs and failure manifests;
+the synthetic benchmark retains paired raw/baseline counts and signed differences.
+Ten native pairs passed on AMD CPU 0 (API smoke only); fixture tests cover
+scheduling failures and hybrid CPU membership. See `harness/README.md`.
+DynamoRIO region alignment and verified Intel counter semantics remain open.
+
+**Next:** Implement and validate explicit DynamoRIO/native region alignment,
+then verify the P/E ADL counter map. Run `tracer/smoke.py` on the i7-12700K,
+pinned separately to a P-core and an E-core, and confirm the native harness on
+both core types. Then collect native noise measurements across reboots. The
+current AMD host cannot provide target evidence. Machine-state tooling and the
+noise analyzer exist, but the complete machine checklist and noise-relative
+thresholds remain unverified; M0 is still in progress.
 
 **Deliverables:** `machine_state.sh`, frozen held-out list, noise report.
 
@@ -207,7 +218,11 @@ Split counts per level and per core:
 
 **Tasks**
 
-- [ ] `harness/` programs the PMU directly (or uses perf with explicit `cpu_core/…/` and `cpu_atom/…/` events). Counting is user mode only. Never schedule more events than physical counters, so there is no multiplexing. Each benchmark runs an empty-loop baseline, which is subtracted.
+- [x] Native harness foundation: `harness/pmu.c` / `harness/run.py`, pinned
+  user-only event groups, explicit PMU selection, caller-supplied physical budget,
+  no multiplexing/scaling, paired empty-loop baseline and retained provenance.
+  Synthetic AMD API smoke passed; target semantics and trace alignment pending.
+- [ ] Complete target verification: `harness/` programs the PMU directly (or uses perf with explicit `cpu_core/…/` and `cpu_atom/…/` events). Counting is user mode only. Never schedule more events than physical counters, so there is no multiplexing. Each benchmark runs an empty-loop baseline, which is subtracted.
 - [ ] `tools/prefetch_ctl.c` sets and reads back prefetcher controls:
   - P-cores: MSR 0x1A4.
   - E-cores: MSRs per Intel's *Hardware Prefetch Control for Intel Atom Cores* (0x1A4 plus 0x1320–0x1323).

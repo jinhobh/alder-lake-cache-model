@@ -6,7 +6,7 @@ or expected hardware specifications.
 
 | Milestone | Status | Existing evidence / remaining work |
 |---|---|---|
-| M0 | In progress | Machine-state controls and noise analyzer implemented and fixture-tested; frozen workload list, confirmed tracer, and hardware noise report pending |
+| M0 | In progress | Machine-state controls and noise analyzer implemented and fixture-tested; 16-workload CLI suite frozen with paired inputs and tool hashes; confirmed target tracer and hardware noise report pending |
 | M1 | In progress | Per-CPU CPUID/sysfs probe implemented; AMD-host smoke checks and synthetic Intel decoding tests pass; target JSON and simulator configuration loading pending |
 | M2 | Pending | No PMU harness, verified prefetch-control utility, or verified counter map |
 | M3 | Pending | No native/trace characterization pairs or established findings |
@@ -19,9 +19,10 @@ or expected hardware specifications.
 1. Implement `tools/machine_state.sh` to apply and record the complete machine
    checklist, including explicit unavailable/unverified settings. Machine-wide
    changes must be deliberate and their prior values recorded.
-2. Select 15–20 runnable held-out workloads, with stable workload/input IDs,
-   versions, commands, and paired scenarios. Freeze `validation/heldout.txt`
-   before model tuning. Do not fill it with provisional names and call it frozen.
+2. Completed: freeze `cli-heldout-v1` in `validation/heldout.txt`: 16 runnable
+   CLI workloads, exact versions/binary hashes and input hashes, paired 1 MiB/32 MiB
+   scenarios. All 32 command/scenario combinations smoke-tested on the AMD host.
+   Preserve the frozen toolchain for target runs; see `validation/README.md`.
 3. Choose Pin or DynamoRIO and confirm execution on the target machine, with
    user-only regions aligned between native PMU measurements and traces.
 4. Collect at least ten repeats per workload under identical recorded state,

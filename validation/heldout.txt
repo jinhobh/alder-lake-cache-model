@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "suite_id": "cli-heldout-v1",
+  "frozen_on": "2026-10-23",
+  "purpose": "Independent event-count validation; selected without simulator results.",
+  "region": "Entire command user-mode execution; tracer/PMU alignment still pending.",
+  "scenarios": {
+    "small": 8192,
+    "large": 262144
+  },
+  "environment": {
+    "LC_ALL": "C",
+    "TZ": "UTC",
+    "OMP_NUM_THREADS": "1",
+    "XZ_DEFAULTS": "",
+    "XZ_OPT": "",
+    "GZIP": "",
+    "BZIP2": "",
+    "BZIP": ""
+  },
+  "tools": {
+    "gzip": {
+      "version": "gzip 1.15",
+      "sha256": "b1f9e749ee0809d6e90100218e6bc13cdf3f26f23c243d5f62aae39162297cb1"
+    },
+    "bzip2": {
+      "version": "bzip2, a block-sorting file compressor.  Version 1.0.8, 13-Jul-2019.",
+      "sha256": "f7a4fc551da5bca1a77026c9530273224daeedfca5492665bed1c383feb42096"
+    },
+    "xz": {
+      "version": "xz (XZ Utils) 5.8.4",
+      "sha256": "24c477492f40fd8b1b6eca2d6cc020e47d4c9c11ee1bfb9ba57fb8e2f6a11bda"
+    },
+    "sha256sum": {
+      "version": "sha256sum (GNU coreutils) 9.12",
+      "sha256": "e0a612dbb527eccb83bdb1b5aacfc23a99e40054e1f60e63ce6be779eefc2ea6"
+    },
+    "sha512sum": {
+      "version": "sha512sum (GNU coreutils) 9.12",
+      "sha256": "8c706dfb557a793a024e48dce985637e9f1291de7e8fdd3dd52bb3a02a401513"
+    },
+    "sort": {
+      "version": "sort (GNU coreutils) 9.12",
+      "sha256": "16eaf3cb72ff0563b26ceebd2b0057d137833765fe22d9109faa675ad08eb15b"
+    },
+    "uniq": {
+      "version": "uniq (GNU coreutils) 9.12",
+      "sha256": "2b04b14dd0772a95955df23148c4c5130a10cacd10269b2471ccbd20ad1ab922"
+    },
+    "awk": {
+      "version": "GNU Awk 5.4.1, API 4.1, PMA Avon 8-g1, (GNU MPFR 4.2.2, GNU MP 6.3.0)",
+      "sha256": "3ac64468ec05bde58b4294771f0afd9c626d4e95cc7a97efd7e7f7a55230febd"
+    },
+    "rg": {
+      "version": "ripgrep 15.2.0",
+      "sha256": "f804c3892ed36bf5c09280bbb964e04514584c994a3b831575973bf963f4a312"
+    },
+    "tar": {
+      "version": "tar (GNU tar) 1.35",
+      "sha256": "8bd961dfeee3543f158f550566a66e78c713a9ad5b88432bab93b63f2bb9347c"
+    },
+    "openssl": {
+      "version": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)",
+      "sha256": "9b81b075be7cc0d39d237132e24418ae6c48dd166e8bf0ca61b0cb19a76fa445"
+    }
+  },
+  "inputs": {
+    "small": {
+      "records.txt": {
+        "bytes": 1048576,
+        "sha256": "c9df0ea0203cedbbb0762d57a7f30fdf7afb159fcf3f6741c31fb78dc0281d1d"
+      },
+      "records.txt.gz": {
+        "bytes": 84975,
+        "sha256": "7b88f9989cefced7cd3434d609665084e13982dcb936874b5fc4f332cb7c0bbb"
+      },
+      "records.txt.bz2": {
+        "bytes": 53929,
+        "sha256": "93aa254977d1a21eb952f19c60aff77089fda1905fe134200b5383899db8bb7c"
+      },
+      "records.txt.xz": {
+        "bytes": 41952,
+        "sha256": "35879113a84bad2acb9d970e48c7de61c552b586bd3c4f2435938050076e290d"
+      },
+      "sorted.txt": {
+        "bytes": 1048576,
+        "sha256": "f7202f2bacff0478657a1ee357f580afc83e8a8d0f39a55f270e858fbfd0980f"
+      },
+      "records.tar": {
+        "bytes": 1054720,
+        "sha256": "1f1e6e30d7bd466701b8bcd5500d591f231260169a5aa874f2cc52ac7577d4db"
+      }
+    },
+    "large": {
+      "records.txt": {
+        "bytes": 33554432,
+        "sha256": "298a8e2a69abf989c8c90c539e07943fea5cd7d4b47d031e3302f2301651add5"
+      },
+      "records.txt.gz": {
+        "bytes": 2716799,
+        "sha256": "881fc8024da8bb68fdf7847d7e5fb463388cadfcd872241b63c357cfcfd5fd22"
+      },
+      "records.txt.bz2": {
+        "bytes": 1679970,
+        "sha256": "de21d47c51e26090e4b3f49e4187c163a14d3b139d1e1befe6b2e2440047c766"
+      },
+      "records.txt.xz": {
+        "bytes": 926536,
+        "sha256": "0d450fa6a01b66b9a962685af3baea1fc5cb4ab1d903f99140d41d0e480cbff2"
+      },
+      "sorted.txt": {
+        "bytes": 33554432,
+        "sha256": "0fa28ff98222d7f9be080c9d4c3e16c856bc626082c344019141ebe91f96d9b9"
+      },
+      "records.tar": {
+        "bytes": 33556480,
+        "sha256": "dfaf075094f82a70b87c129173c88946eadf3380da470c4755e62364a9d78fab"
+      }
+    }
+  },
+  "workloads": [
+    {
+      "id": "gzip-compress",
+      "argv": [
+        "gzip",
+        "-n",
+        "-6",
+        "-c",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "gzip-decompress",
+      "argv": [
+        "gzip",
+        "-d",
+        "-c",
+        "records.txt.gz"
+      ]
+    },
+    {
+      "id": "bzip2-compress",
+      "argv": [
+        "bzip2",
+        "-6",
+        "-c",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "bzip2-decompress",
+      "argv": [
+        "bzip2",
+        "-d",
+        "-c",
+        "records.txt.bz2"
+      ]
+    },
+    {
+      "id": "xz-compress",
+      "argv": [
+        "xz",
+        "--threads=1",
+        "-6",
+        "-c",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "xz-decompress",
+      "argv": [
+        "xz",
+        "-d",
+        "-c",
+        "records.txt.xz"
+      ]
+    },
+    {
+      "id": "sha256",
+      "argv": [
+        "sha256sum",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "sha512",
+      "argv": [
+        "sha512sum",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "sort-lexical",
+      "argv": [
+        "sort",
+        "--parallel=1",
+        "-S",
+        "128M",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "sort-numeric",
+      "argv": [
+        "sort",
+        "--parallel=1",
+        "-S",
+        "128M",
+        "-n",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "uniq-count",
+      "argv": [
+        "uniq",
+        "-c",
+        "sorted.txt"
+      ]
+    },
+    {
+      "id": "awk-aggregate",
+      "argv": [
+        "awk",
+        "{sum[$2]+=$1} END {for (k in sum) print k, sum[k]}",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "regex-search",
+      "argv": [
+        "rg",
+        "--no-config",
+        "--threads",
+        "1",
+        "--color",
+        "never",
+        "-c",
+        "^0[0-9]+ group00[0-7][0-9] .*error",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "tar-create",
+      "argv": [
+        "tar",
+        "--format=ustar",
+        "--mtime=@0",
+        "--owner=0",
+        "--group=0",
+        "--numeric-owner",
+        "-cf",
+        "-",
+        "records.txt"
+      ]
+    },
+    {
+      "id": "tar-list",
+      "argv": [
+        "tar",
+        "-tf",
+        "records.tar"
+      ]
+    },
+    {
+      "id": "aes256-ctr",
+      "argv": [
+        "openssl",
+        "enc",
+        "-aes-256-ctr",
+        "-nosalt",
+        "-K",
+        "0101010101010101010101010101010101010101010101010101010101010101",
+        "-iv",
+        "02020202020202020202020202020202",
+        "-in",
+        "records.txt"
+      ]
+    }
+  ]
+}

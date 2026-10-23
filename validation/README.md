@@ -1,7 +1,7 @@
 # Noise-floor protocol
 
-The held-out list is not frozen yet. Do not use simulator results to select or
-replace workloads. Native Phase 0 repeats characterize measurement variability;
+The held-out list is frozen in `heldout.txt` (see below). Do not use simulator
+results to select or replace workloads. Native Phase 0 repeats characterize measurement variability;
 model comparisons wait for frozen-model Phase 7 evaluation.
 
 Collect at least ten native measurements per workload/scenario/event per boot
@@ -43,3 +43,54 @@ The report's twice-CV percentage is a noise floor for provisional relative
 targets; it does not finalize S2–S4. Zero-median events require an absolute
 criterion. Final MPKI criteria also require consistent region instruction counts.
 Never describe synthetic regression fixtures as measurements.
+
+## Frozen held-out suite
+
+`heldout.txt` is the JSON manifest for **cli-heldout-v1**, frozen on 2026-10-23
+without examining simulator results. It selects 16 runnable command workloads:
+gzip/bzip2/xz compression and decompression, SHA-256/SHA-512, lexical/numeric
+sort, unique counting, AWK aggregation, regex search, tar creation/listing, and
+AES-256-CTR encryption. These are modest CLI workloads, with correlated cases;
+they do not establish coverage of SPEC CPU2017, graph analytics, or general
+multithreaded applications. No licensed benchmark installation is required.
+
+Each workload has the same deterministic 1 MiB (`small`) and 32 MiB (`large`)
+text corpus for paired working-set scenarios. The manifest records exact argv,
+input sizes and SHA-256 hashes, tool versions and executable hashes, and fixed
+locale/thread/options environment. Corpus generator v1 uses fixed integer
+arithmetic and fixed-width ASCII. The 32 executions were smoke-checked on the
+AMD development host, without timing, PMU counts, or simulator comparisons.
+
+```sh
+python3 validation/heldout.py prepare --root /tmp/cache-heldout-v1
+python3 validation/heldout.py check --root /tmp/cache-heldout-v1
+python3 validation/heldout.py smoke --root /tmp/cache-heldout-v1
+python3 validation/heldout.py smoke --root /tmp/cache-heldout-v1 \
+  --workload gzip-compress --scenario large
+```
+
+Preparation writes generated files under the supplied root; use a dedicated
+scratch directory. It requires the frozen toolchain. Checking rejects modified
+inputs or changed executable binaries/versions. Preserve that toolchain when
+moving to the i7-12700K; do not silently regenerate the freeze for newer tools.
+Shared-library versions, kernel and CPU dispatch also affect executed code:
+retain their machine-state/package records with measurements. Executable hashes
+alone do not identify a complete runtime environment.
+
+The command's entire user-mode execution is the selected region. Preparation,
+input verification and Python orchestration are outside that region. Native
+PMU and tracer runs must execute the manifest argv directly with the recorded
+environment and working directory; do not count or trace the Python wrapper.
+Tracer confirmation, matching start/stop boundaries, CPU affinity, ASLR, page
+policy, page-cache state and empty-region baseline subtraction remain pending.
+The compression inputs and sorted/archive inputs are prepared before counting.
+`sort` uses one worker and a 128 MiB memory allowance. `tar-list` deliberately
+measures archive metadata traversal rather than payload reads. AWK output order
+is unspecified and is not a performance-validation signal.
+
+Do not train mechanisms on these workloads or inspect simulator agreement
+until a model is frozen. Scope, input, command or toolchain changes require a
+new suite ID, a documented reason independent of simulator errors, and retained
+older manifests. Freeze completeness does not pass M0: target-machine tracer
+confirmation, repeated native counts across reboots and noise-relative S2–S4
+thresholds are still required.

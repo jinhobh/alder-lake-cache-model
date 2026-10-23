@@ -88,12 +88,22 @@ docs/counter_map.md         sim statistic ↔ PMU event ↔ known discrepancies
   - Transparent huge pages set deliberately. Huge page pools reserved (2 MiB and 1 GiB).
   - ASLR off for traced/native pairs (`setarch -R`).
   - Kernel version, microcode, BIOS version and settings, DRAM part, speed, timings, channel/rank population.
-- [ ] Pick the held-out set: 15–20 workloads, e.g. a SPEC CPU2017 subset plus GAP. Freeze it in `validation/heldout.txt`.
+- [x] Pick the held-out set: 16 CLI workloads frozen in `validation/heldout.txt`
+  as `cli-heldout-v1` on 2026-10-23, with exact commands, tool/input hashes, and
+  paired 1 MiB/32 MiB inputs. All 32 cases smoke-tested on the AMD development
+  host; no simulator comparisons or hardware accuracy claims. See
+  `validation/README.md` for coverage limits and reproduction.
 - [ ] Pick the tracer (Pin or DynamoRIO drcachesim) and confirm it runs on this machine.
 - [ ] Measure the noise floor:
   - Run ≥ 10 times per workload under identical state.
   - Repeat across reboots, since physical page assignment changes between boots.
   - Report median, CV and bootstrap 95% CI per event.
+
+**Next:** Choose Pin or DynamoRIO and confirm it on the i7-12700K, then
+collect native noise measurements across reboots once the user-only PMU harness
+is available. The current AMD host cannot provide target evidence. Machine-state
+tooling and the noise analyzer exist, but the complete machine checklist and
+noise-relative thresholds remain unverified; M0 is still in progress.
 
 **Deliverables:** `machine_state.sh`, frozen held-out list, noise report.
 

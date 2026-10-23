@@ -6,7 +6,7 @@ or expected hardware specifications.
 
 | Milestone | Status | Existing evidence / remaining work |
 |---|---|---|
-| M0 | In progress | Machine-state controls and noise analyzer implemented and fixture-tested; 16-workload CLI suite frozen with paired inputs and tool hashes; confirmed target tracer and hardware noise report pending |
+| M0 | In progress | Machine-state controls and noise analyzer implemented and fixture-tested; 16-workload CLI suite frozen with paired inputs and tool hashes; DynamoRIO offline synthetic smoke passed on AMD; target P/E tracer confirmation, region alignment and hardware noise report pending |
 | M1 | In progress | Per-CPU CPUID/sysfs probe implemented; AMD-host smoke checks and synthetic Intel decoding tests pass; target JSON and simulator configuration loading pending |
 | M2 | Pending | No PMU harness, verified prefetch-control utility, or verified counter map |
 | M3 | Pending | No native/trace characterization pairs or established findings |
@@ -23,8 +23,10 @@ or expected hardware specifications.
    CLI workloads, exact versions/binary hashes and input hashes, paired 1 MiB/32 MiB
    scenarios. All 32 command/scenario combinations smoke-tested on the AMD host.
    Preserve the frozen toolchain for target runs; see `validation/README.md`.
-3. Choose Pin or DynamoRIO and confirm execution on the target machine, with
-   user-only regions aligned between native PMU measurements and traces.
+3. Selected DynamoRIO drmemtrace; pinned-build AMD smoke passed checksum,
+   offline conversion, invariants and instruction/data coverage checks. See
+   [reproduction](../tracer/README.md) and [evidence](tracer-smoke.md). Repeat on
+   target P/E cores and align user-only regions with the native PMU harness.
 4. Collect at least ten repeats per workload under identical recorded state,
    repeat across reboots, and report median, CV, and bootstrap 95% intervals
    for each event. Phase 0 uses these measurements to establish variability,

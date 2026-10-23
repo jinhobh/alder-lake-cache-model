@@ -16,7 +16,9 @@ No hardware fidelity, measured configuration, or milestone completion is claimed
 Phase 0 tooling has started: see [machine-state collection and controls](tools/README.md)
 and the [noise-floor protocol and analyzer](validation/README.md). The
 [CPU inventory probe](hardware/README.md) captures CPUID/sysfs facts; target-machine
-measurements and simulator configuration loading remain pending.
+measurements and simulator configuration loading remain pending. DynamoRIO
+[tracer selection and smoke check](tracer/README.md) now pass on the AMD
+development host; target P/E confirmation and PMU region alignment remain open.
 
 ## Validation targets
 

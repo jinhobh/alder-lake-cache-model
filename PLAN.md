@@ -93,16 +93,21 @@ docs/counter_map.md         sim statistic ↔ PMU event ↔ known discrepancies
   paired 1 MiB/32 MiB inputs. All 32 cases smoke-tested on the AMD development
   host; no simulator comparisons or hardware accuracy claims. See
   `validation/README.md` for coverage limits and reproduction.
-- [ ] Pick the tracer (Pin or DynamoRIO drcachesim) and confirm it runs on this machine.
+- [x] Select DynamoRIO drmemtrace offline tracing. Synthetic native/trace
+  checksums, offline conversion, invariant checking and positive instruction/data
+  counts passed on the AMD development host with pinned build 11.91.20741.
+  Reproduction: `tracer/README.md`; evidence: `docs/tracer-smoke.md`.
+- [ ] Confirm the tracer on the i7-12700K, on P and E cores, and align trace
+  region markers with the native PMU harness. The AMD smoke is not target evidence.
 - [ ] Measure the noise floor:
   - Run ≥ 10 times per workload under identical state.
   - Repeat across reboots, since physical page assignment changes between boots.
   - Report median, CV and bootstrap 95% CI per event.
 
-**Next:** Choose Pin or DynamoRIO and confirm it on the i7-12700K, then
-collect native noise measurements across reboots once the user-only PMU harness
-is available. The current AMD host cannot provide target evidence. Machine-state
-tooling and the noise analyzer exist, but the complete machine checklist and
+**Next:** Run `tracer/smoke.py` on the i7-12700K, pinned separately to a P-core
+and an E-core. Implement the Phase 3 user-only PMU harness and matching trace
+region boundaries, then collect native noise measurements across reboots. The
+current AMD host cannot provide target evidence. Machine-state tooling and the noise analyzer exist, but the complete machine checklist and
 noise-relative thresholds remain unverified; M0 is still in progress.
 
 **Deliverables:** `machine_state.sh`, frozen held-out list, noise report.

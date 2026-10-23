@@ -1,4 +1,4 @@
-# Validated i7-12700K cache-hierarchy model
+# Alder Lake Cache Model
 
 This project aims to build a publicly documented, hardware-validated model of
 cache traffic on the Intel i7-12700K, covering Golden Cove P-cores, the
